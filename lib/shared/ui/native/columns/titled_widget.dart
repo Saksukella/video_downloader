@@ -10,7 +10,7 @@ class TitledWidget extends StatelessWidget {
       {super.key,
       this.marginVertical = 10,
       this.marginHorizontal = 0,
-      this.paddingVertical = 0,
+      this.paddingVertical = 2,
       this.paddingHorizontal = 0,
       this.isCenter = false,
       required this.title,
@@ -46,7 +46,7 @@ class TitledWidget extends StatelessWidget {
               endIndent: isCenter ? 15 : 20,
             ),
           ),
-          addVerticalMargin(10),
+          addVerticalMargin(5),
           Padding(
             padding: EdgeInsets.symmetric(
                 vertical: paddingVertical, horizontal: paddingHorizontal),

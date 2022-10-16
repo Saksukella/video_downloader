@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:video_downloader/ui/pages/home/components/browse_page/browse_page.dart';
 import 'package:video_downloader/ui/pages/home/controllers/bottombar_controller.dart';
+import 'package:video_downloader/ui/pages/home/controllers/download_controller.dart';
 import 'package:video_downloader/ui/surface/snackbars/flushbar.dart';
 import 'package:video_downloader/ui/widgets/animations/page_switch/horizontal_switch.dart';
 import 'package:video_downloader/ui/widgets/drawer/app_drawer.dart';
 
-import '../../../services/ads/app_admob.dart';
+import '../../../shared/services/money/ads/widget/banner_ad_widget.dart';
 import '../../widgets/helpers/margins.dart';
+import '../settings/settings_page.dart';
+import 'components/home_inner_page/home_inner.dart';
 import 'components/search_page/search_inner_page.dart';
 import 'components/video_page/video_inner_page.dart';
 import 'controllers/video_controller.dart';
@@ -26,33 +29,41 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     BottomBarController bottomBarController = Get.put(BottomBarController());
     VideoMController videoMController = Get.put(VideoMController());
+    Get.put(DownloadCont());
 
     return Scaffold(
       drawer: const AppDrawer(),
       bottomNavigationBar: Obx(() {
         int currentIndex = bottomBarController.currentIndex;
-        return BottomNavigationBar(
+        return SalomonBottomBar(
           currentIndex: currentIndex,
+          margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
+          items: [
+            SalomonBottomBarItem(
+              icon: const Icon(
+                Icons.home,
+              ),
+              title: const Text('Home'),
+            ),
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.language_sharp),
+              title: const Text('Browse'),
+            ),
+            SalomonBottomBarItem(
+                icon: const Icon(Icons.search), title: const Text("Search")),
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.settings),
+              title: const Text('Settings'),
+            ),
+          ],
           onTap: (index) {
             bottomBarController.currentIndex = index;
-            if (index == 0) {
+            if (index == 1) {
               Get.to(() => const BrowsePage());
+            } else if (index == 3) {
+              Get.to(() => const SettingsPage());
             }
           },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.language_sharp),
-              label: 'Browse',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.download),
-              label: 'Videos',
-            )
-          ],
         );
       }),
       floatingActionButton: FloatingActionButton(
@@ -64,48 +75,21 @@ class _HomeState extends State<Home> {
       body: SafeArea(
         child: Column(
           children: [
-            FutureBuilder(
-                future: AdService().createBannerAd(adSize: AdSize.fullBanner),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    BannerAd bannerAd = snapshot.data!;
-                    return Container(
-                      height: bannerAd.size.height.toDouble(),
-                      width: bannerAd.size.width.toDouble(),
-                      color: Colors.transparent,
-                      child: AdWidget(ad: bannerAd),
-                    );
-                  } else {
-                    return Container();
-                  }
-                }),
+            const BannerAdWidget(),
             Obx(() {
               int currentIndex = bottomBarController.currentIndex;
               return Expanded(
                 child: HorizontalSwitchAnim(
                   reverse: currentIndex < bottomBarController.previousIndex,
-                  child: currentIndex == 1
-                      ? const SearchInnerPage()
-                      : const VideoInnerPage(),
+                  child: currentIndex == 0
+                      ? const HomeInner()
+                      : currentIndex == 2
+                          ? const SearchInnerPage()
+                          : const VideoInnerPage(),
                 ),
               );
             }),
-            FutureBuilder(
-              future: AdService().createBannerAd(adSize: AdSize.fullBanner),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  BannerAd bannerAd = snapshot.data!;
-                  return Container(
-                    height: bannerAd.size.height.toDouble(),
-                    width: bannerAd.size.width.toDouble(),
-                    color: Colors.transparent,
-                    child: AdWidget(ad: bannerAd),
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+            const BannerAdWidget(),
             verticalMargin(10.sp),
           ],
         ),

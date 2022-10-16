@@ -1,14 +1,19 @@
+import 'dart:developer';
+
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'utils/ad_utils.dart';
 
 class AdService {
-  static final int maxFailedLoadAttempts = 5;
+  static const int maxFailedLoadAttempts = 5;
 
-  static final AdRequest request = const AdRequest();
+  static const AdRequest request = AdRequest();
 
   static Future<BannerAd> createBannerAd(
       {AdSize adSize = AdSize.banner}) async {
+    log(
+      adUtilsBannnerAdId(),
+    );
     BannerAd bannerAd = BannerAd(
         size: adSize,
         request: const AdRequest(),
@@ -21,7 +26,7 @@ class AdService {
     return bannerAd;
   }
 
-  static Future<void> showRewaredInterstitialAd({int loadAttempt = 0}) async {
+  static Future<void> showInterstitialAd({int loadAttempt = 0}) async {
     await InterstitialAd.load(
       adUnitId: adUtilsInterstitialAdId(),
       request: request,
@@ -37,7 +42,7 @@ class AdService {
               loadAttempt += 1;
 
               if (loadAttempt < maxFailedLoadAttempts) {
-                showRewaredInterstitialAd(loadAttempt: loadAttempt);
+                showInterstitialAd(loadAttempt: loadAttempt);
               }
             },
           );
@@ -45,7 +50,7 @@ class AdService {
         },
         onAdFailedToLoad: (LoadAdError error) {
           if (loadAttempt < maxFailedLoadAttempts) {
-            showRewaredInterstitialAd(loadAttempt: loadAttempt + 1);
+            showInterstitialAd(loadAttempt: loadAttempt + 1);
           }
         },
       ),

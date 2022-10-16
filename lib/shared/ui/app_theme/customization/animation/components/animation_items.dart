@@ -150,9 +150,10 @@ class _SAnimationItemState extends State<SAnimationItem> {
           ),
           addVerticalMargin(15),
           RadioChips(
-            initialIndex: radioModels.indexOf(radioModels.firstWhere(
-                (element) =>
-                    element.value == customAnimController.getDuration)),
+            initialIndex: radioModels
+                .indexWhere((element) =>
+                    element.value == customAnimController.getDuration)
+                .toInt(),
             items: radioModels,
             onSelected: (i, model) {
               customAnimController.setDuration(model.value.toInt());

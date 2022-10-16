@@ -42,9 +42,9 @@ class RowLR extends StatelessWidget {
                       : MainAxisAlignment.start
                   : MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(child: l),
+                l,
                 addHorizontalMargin(padding),
-                Flexible(child: r),
+                r,
               ],
             ),
           );

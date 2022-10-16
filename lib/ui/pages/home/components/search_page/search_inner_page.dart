@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:video_downloader/services/models/video_model.dart';
-import 'package:video_downloader/ui/pages/home/controllers/video_controller.dart';
+import 'package:video_downloader/services/models/downloading_model.dart';
+import 'package:video_downloader/shared/res/utils/asset/asset_utils.dart';
+import 'package:video_downloader/ui/pages/home/controllers/download_controller.dart';
 import 'package:video_downloader/ui/surface/snackbars/flushbar.dart';
 import 'package:video_downloader/ui/widgets/helpers/margins.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -22,7 +23,7 @@ class SearchInnerPage extends StatefulWidget {
 class _SearchInnerPageState extends State<SearchInnerPage> {
   TextEditingController controller = TextEditingController();
 
-  String? safeUrl() {
+  String? safeID() {
     if (controller.text.startsWith("https://m.youtube.com/watch?v=") ||
         controller.text.startsWith("https://www.youtube.com/watch?v=")) {
       return YoutubePlayer.convertUrlToId(controller.text);
@@ -33,10 +34,8 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
 
   @override
   Widget build(BuildContext context) {
-    VideoMController videoMController = Get.find();
-
     final YoutubePlayerController playerController = YoutubePlayerController(
-      initialVideoId: safeUrl() ?? '',
+      initialVideoId: safeID() ?? '',
       flags: const YoutubePlayerFlags(
         showLiveFullscreenButton: false,
         autoPlay: false,
@@ -45,7 +44,6 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
     );
 
     return Obx(() {
-      log(videoMController.videos.toString());
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 0.w),
         child: SingleChildScrollView(
@@ -65,12 +63,12 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
                 child: Column(
                   children: <Widget>[
                     Visibility(
-                      visible: safeUrl() == "",
+                      visible: safeID() == "",
                       child: SizedBox(
                         height: 100,
                         width: 100,
                         child: Lottie.asset(
-                          'assets/jsons/download.json',
+                          assetJson("download"),
                           repeat: true,
                           animate: true,
                         ),
@@ -102,7 +100,7 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
                     verticalMargin(20.h),
                     MaterialButton(
                       onPressed: () {
-                        if (safeUrl() != "") {
+                        if (safeID() != "") {
                           YoutubeMetaData y = playerController.metadata;
                           playerController.addListener(() {
                             if (playerController.value.isReady) {
@@ -110,16 +108,13 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
                             }
                           });
 
-                          VideoModel v = VideoModel(
-                              id: y.videoId,
-                              url: controller.text,
-                              title: y.title,
-                              downloadDate: DateTime.now(),
-                              downloadProgress: 0);
+                          log("video id is ${safeID()}");
 
-                          videoMController.videos.add(v);
+                          DownloadingModel d = DownloadingModel(
+                              id: safeID()!, title: y.title, progress: 0);
 
-                          videoMController.download(v);
+                          downloadCont.addDownloading(d);
+                          downloadCont.download(d);
                         } else {
                           showFlushbar(
                             title: "Invalid Url",
@@ -129,7 +124,7 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
                           );
                         }
                       },
-                      height: 43.h,
+                      height: 41.h,
                       minWidth: 300.w,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50.r),

@@ -1,62 +1,81 @@
-import 'dart:io';
-
+import 'package:chewie/chewie.dart';
 import 'package:get/get.dart';
-import 'package:video_downloader/services/ads/app_admob.dart';
 import 'package:video_downloader/services/hive/video_hive.dart';
 import 'package:video_downloader/services/models/video_model.dart';
-import 'package:video_downloader/services/res/user_show_ad_key.dart';
-import 'package:video_downloader/shared/services/preferences/utils/pref_operations.dart';
 import 'package:video_downloader/ui/pages/home/utils/file_utils.dart';
-import 'package:video_downloader/ui/pages/home/widgets/qualty_dialog.dart';
-import 'package:video_downloader/ui/surface/snackbars/flushbar.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:video_player/video_player.dart';
 
-import '../../../../shared/ui/packages/loading_widgets_p/loading_dialog.dart';
+import '../utils/video_utils.dart';
 
 class VideoMController extends GetxController {
-  RxList<VideoModel> videos = <VideoModel>[].obs;
+  final RxList<VideoModel> _videos = <VideoModel>[].obs;
 
   VideoMController() {
-    videos.value = HiveVideo().readAll();
+    _videos.value = HiveVideo().readAll();
+  }
+  List<VideoModel> get videos => _videos;
+
+  //order list recent
+  List<VideoModel> get recentVideos {
+    List<VideoModel> list = List.from(_videos);
+    list.sort((a, b) => b.downloadDate.compareTo(a.downloadDate));
+    return list;
   }
 
-  VideoModel getVideo(String id) {
-    return videos.firstWhere((VideoModel element) => element.id == id);
+  VideoModel? getVideo(String id) {
+    return _videos.firstWhereOrNull((VideoModel element) => element.id == id);
+  }
+
+  void addVideo(VideoModel video) {
+    _videos.add(video);
+    HiveVideo().write(video.id, video);
+    refresh();
   }
 
   void setVideo(VideoModel video) {
-    //update video model with video given
-
     int index =
-        videos.indexWhere((VideoModel element) => element.url == video.url);
-    VideoModel lastVideo = videos[index];
+        _videos.indexWhere((VideoModel element) => element.url == video.url);
+    VideoModel lastVideo = _videos[index];
     if (index == -1) {
-      videos.add(video);
+      return;
     }
     if (lastVideo.downloadProgress.toInt() != video.downloadProgress.toInt()) {
-      videos[index] = video;
+      _videos[index] = video;
       HiveVideo().write(video.id, video);
-      refresh();
+      //_videos.refresh();
     }
   }
 
-  List<VideoModel> get downloadingVideos => videos
-      .where((VideoModel video) => video.downloadProgress != 100)
-      .toList();
-
-  List<VideoModel> get downloadedVideos => videos
-      .where((VideoModel video) => video.downloadProgress == 100)
-      .toList();
-
   void deleteVideo(VideoModel videoModel) {
-    videos.removeWhere((VideoModel video) => video.id == videoModel.id);
+    _videos.removeWhere((VideoModel video) => video.id == videoModel.id);
     HiveVideo().delete(videoModel.id);
-    videoFilefromName(videoModel.title).then(
+    videoFilefromName(videoModel.id).then(
         (value) async => await value.exists() ? value.deleteSync() : null);
     refresh();
   }
 
-  Future<void> download(VideoModel videoModel) async {
+  Future<ChewieController> videoControllerwID(String id,
+      {fullScreen = false,
+      fullScreenByDefault = false,
+      autoPlay = false,
+      aspectRatio}) async {
+    var v = VideoPlayerController.file(
+      await videoFilefromName(id),
+    );
+    //await v.initialize();
+
+    final c = ChewieController(
+        videoPlayerController: v,
+        aspectRatio: aspectRatio,
+        fullScreenByDefault: fullScreenByDefault,
+        allowFullScreen: fullScreen,
+        autoPlay: autoPlay,
+        startAt: videoUtilsLastDurationSecond(id));
+
+    videoUtilsSetLastWatchedVideo(id);
+    return c;
+  }
+  /* Future<void> download(VideoModel videoModel) async {
     try {
       loadingDialog();
       final yt = YoutubeExplode();
@@ -128,5 +147,7 @@ class VideoMController extends GetxController {
         message: e.toString(),
       );
     }
-  }
+  } */
 }
+
+VideoMController get videoMCont => Get.find<VideoMController>();

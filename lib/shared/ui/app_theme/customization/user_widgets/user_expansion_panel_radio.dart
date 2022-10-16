@@ -34,10 +34,10 @@ class SUserExpansionPanelRadio extends StatelessWidget {
           callback?.call(index, isExpanded);
           if (listViewController != null) {
             if (!isExpanded) {
-              await Future.delayed(Duration(milliseconds: 120));
+              await Future.delayed(const Duration(milliseconds: 120));
               listViewController!.animateTo(
                 listViewController!.initialScrollOffset + scrollOffset,
-                duration: Duration(milliseconds: 400),
+                duration: const Duration(milliseconds: 400),
                 curve: Curves.easeInOut,
               );
             }
@@ -57,13 +57,13 @@ ExpansionPanelRadio userExpansionPanelItem({
 }) {
   return ExpansionPanelRadio(
     value: value,
-    backgroundColor: color,
+    backgroundColor: color ?? Colors.transparent,
     headerBuilder: headerBuilder,
     body: Padding(
       padding: EdgeInsets.all(padding),
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(10),
               bottomRight: Radius.circular(10),
             ),
@@ -71,7 +71,7 @@ ExpansionPanelRadio userExpansionPanelItem({
               color: Colors.grey.withOpacity(themes.isDark ? 0.25 : 0.35),
               width: 0.7,
             )),
-        padding: EdgeInsets.all(3),
+        padding: const EdgeInsets.all(3),
         child: body,
       ),
     ),

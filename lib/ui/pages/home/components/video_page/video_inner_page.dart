@@ -1,19 +1,16 @@
 import 'dart:async';
 
 import 'package:chewie/chewie.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:grouped_list/grouped_list.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:video_downloader/services/models/video_model.dart';
 import 'package:video_downloader/shared/ui/native/dividers/divider1.dart';
 import 'package:video_downloader/ui/pages/home/controllers/video_controller.dart';
-import 'package:video_downloader/ui/pages/home/utils/date_utils.dart';
-import 'package:video_downloader/ui/pages/home/utils/file_utils.dart';
+import 'package:video_downloader/ui/pages/home/dialog/delete_video_dialog.dart';
 import 'package:video_downloader/ui/pages/home/utils/video_utils.dart';
-import 'package:video_player/video_player.dart';
+import 'package:video_downloader/ui/widgets/videos_empty.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../../../widgets/helpers/margins.dart';
@@ -28,21 +25,16 @@ class VideoInnerPage extends StatefulWidget {
 class _VideoInnerPageState extends State<VideoInnerPage> {
   List<ChewieController> videoControllers = [];
 
-  Future<void> _initVideos(VideoMController videoMControl) async {
+  Future<void> _initVideos(videos) async {
     videoControllers.clear();
-    for (var element in videoMControl.downloadedVideos) {
-      var v = VideoPlayerController.file(await videoFilefromName(element.id));
-      await v.initialize();
-      ChewieController chewieController = ChewieController(
-        aspectRatio: 3.4 / 2,
-        startAt: videoUtilsLastDurationSecond(element.id),
-        deviceOrientationsAfterFullScreen: [
-          DeviceOrientation.portraitUp,
-        ],
-        videoPlayerController: v,
-      );
+    for (var element in videos) {
+      ChewieController videoPlayerController =
+          await videoMCont.videoControllerwID(element.id,
+              fullScreen: true,
+              fullScreenByDefault: false,
+              aspectRatio: 3.4 / 2);
 
-      videoControllers.add(chewieController);
+      videoControllers.add(videoPlayerController);
     }
   }
 
@@ -56,50 +48,43 @@ class _VideoInnerPageState extends State<VideoInnerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return LiquidPullToRefresh(
-      onRefresh: () async {
-        await _initVideos(Get.find<VideoMController>());
-        setState(() {});
-      },
-      child: FutureBuilder(
-          future: _initVideos(Get.find<VideoMController>()),
+    return Obx(() {
+      return FutureBuilder(
+          future: _initVideos(videoMCont.videos),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (videoControllers.isEmpty) {
-                return const Center(
-                  child: Text("No videos downloaded"),
-                );
+                return const VideosEmpty();
               }
-              return _VideoList(
-                  videoMController: Get.find<VideoMController>(),
-                  videoControllers: videoControllers);
+              return CupertinoScrollbar(
+                  child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: _VideoList(videoControllers: videoControllers)));
             }
             return const Center(
               child: CircularProgressIndicator(),
             );
-          }),
-    );
+          });
+    });
   }
 }
 
 class _VideoList extends StatelessWidget {
   const _VideoList({
-    required this.videoMController,
     required this.videoControllers,
   });
 
-  final VideoMController videoMController;
   final List<ChewieController> videoControllers;
 
   @override
   Widget build(BuildContext context) {
     return GroupedListView<VideoModel, String>(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      physics: const BouncingScrollPhysics(),
-      elements: videoMController.downloadedVideos,
-      groupBy: (element) => mdy(element.downloadDate),
+      physics: const ClampingScrollPhysics(),
+      shrinkWrap: true,
+      elements: videoMCont.videos,
+      groupBy: (element) => element.downloadDate.toIso8601String(),
       groupComparator: (value1, value2) => value2.compareTo(value1),
-
       separator: const Divider1(),
       groupSeparatorBuilder: (String groupByValue) => Chip(
         label: Text(
@@ -108,16 +93,15 @@ class _VideoList extends StatelessWidget {
         ),
       ),
       itemBuilder: (context, element) {
-        if (videoControllers.length !=
-            videoMController.downloadedVideos.length) {
+        if (videoControllers.length != videoMCont.videos.length) {
           return SizedBox(
             height: Get.height / 2,
             width: Get.width,
             child: const Center(child: CircularProgressIndicator()),
           );
         }
-        ChewieController controller = videoControllers[
-            videoMController.downloadedVideos.indexOf(element)];
+        ChewieController controller =
+            videoControllers[videoMCont.videos.indexOf(element)];
 
         Timer.periodic(const Duration(milliseconds: 100), (timer) {
           videoUtilsSetLastDurationSecond(
@@ -128,7 +112,7 @@ class _VideoList extends StatelessWidget {
           key: Key(element.id),
           onVisibilityChanged: (visibilityInfo) {
             if (visibilityInfo.visibleFraction == 0) {
-              if (!controller.isFullScreen) {
+              if (!controller.isPlaying) {
                 controller.pause();
               }
             }
@@ -151,13 +135,12 @@ class _VideoList extends StatelessWidget {
                     children: [
                       IconButton(
                           onPressed: () async {
-                            var f = await videoFilefromName(element.title);
-                            Share.shareFiles([f.path], text: element.title);
+                            shareVideo(element);
                           },
                           icon: const Icon(Icons.share)),
                       IconButton(
                           onPressed: () {
-                            videoMController.deleteVideo(element);
+                            deleteVideoDialog(element);
                           },
                           icon: const Icon(Icons.delete)),
                     ],
@@ -165,11 +148,10 @@ class _VideoList extends StatelessWidget {
                 ],
               ),
               verticalMargin(10),
-              Transform.scale(
-                scale: 1,
-                child: AspectRatio(
-                  aspectRatio: controller.aspectRatio!,
-                  child: Chewie(controller: controller),
+              SizedBox(
+                height: Get.height / 3,
+                child: Chewie(
+                  controller: controller,
                 ),
               ),
               verticalMargin(10),
