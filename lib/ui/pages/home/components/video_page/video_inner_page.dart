@@ -103,11 +103,6 @@ class _VideoList extends StatelessWidget {
         ChewieController controller =
             videoControllers[videoMCont.videos.indexOf(element)];
 
-        Timer.periodic(const Duration(milliseconds: 100), (timer) {
-          videoUtilsSetLastDurationSecond(
-              element.id, controller.videoPlayerController.value.position);
-        });
-
         return VisibilityDetector(
           key: Key(element.id),
           onVisibilityChanged: (visibilityInfo) {

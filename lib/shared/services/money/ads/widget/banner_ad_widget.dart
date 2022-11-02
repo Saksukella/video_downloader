@@ -4,7 +4,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../app_admob.dart';
 
 class BannerAdWidget extends StatelessWidget {
-  const BannerAdWidget({super.key, this.adSize = AdSize.banner});
+  const BannerAdWidget({super.key, this.adSize = AdSize.fullBanner});
 
   final AdSize adSize;
 
@@ -15,7 +15,7 @@ class BannerAdWidget extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           BannerAd ad = snapshot.data!;
-          return Container(
+          return SizedBox(
               height: ad.size.height.toDouble(),
               width: ad.size.width.toDouble(),
               child: AdWidget(ad: snapshot.data!));

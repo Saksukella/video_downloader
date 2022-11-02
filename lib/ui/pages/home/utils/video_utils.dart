@@ -5,28 +5,32 @@ import 'package:video_downloader/ui/pages/home/utils/file_utils.dart';
 
 import '../../../../shared/services/preferences/utils/pref_operations.dart';
 
-Duration? videoUtilsLastDurationSecond(String id) {
-  int? d = readPrefInt(VideoKeys.LAST_DURATION_SECOND + id);
+void videoUtilsSetLastWatchedVideo(String id) {
+  writePrefString(VideoKeys.last_watched, id);
+}
+
+String? videoUtilsGetLastWatchedVideo() {
+  return readPrefString(VideoKeys.last_watched);
+}
+
+void videoUtilsSetEndDuration(String id, Duration duration) {
+  writePrefInt(VideoKeys.end_duration + id, duration.inSeconds);
+}
+
+Duration? videoUtilsGetEndDuration(String id) {
+  int? d = readPrefInt(VideoKeys.end_duration + id);
   if (d == null) {
     return null;
   }
   return Duration(seconds: d);
 }
 
-void videoUtilsSetLastDurationSecond(String id, Duration duration) {
-  writePrefInt(VideoKeys.LAST_DURATION_SECOND + id, duration.inSeconds);
+void videoUtilsSLastDurationSecond(String id, Duration duration) {
+  writePrefInt(VideoKeys.last_duration + id, duration.inSeconds);
 }
 
-void videoUtilsSetLastWatchedVideo(String id) {
-  writePrefString(VideoKeys.LAST_WATCHED_VIDEO, id);
-}
-
-String? videoUtilsGetLastWatchedVideo() {
-  return readPrefString(VideoKeys.LAST_WATCHED_VIDEO);
-}
-
-Duration? videoUtilsEndDuration(String id) {
-  int? d = readPrefInt(VideoKeys.LAST_DURATION_SECOND + id);
+Duration? videoUtilsGLastDurationSecond(String id) {
+  int? d = readPrefInt(VideoKeys.last_duration + id);
   if (d == null) {
     return null;
   }

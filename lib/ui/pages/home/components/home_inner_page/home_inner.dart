@@ -29,7 +29,7 @@ class HomeInner extends StatelessWidget {
                     TitledWidget(
                       title: "Recent",
                       child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
+                        physics: const ClampingScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: videoMCont.recentVideos.length,
                         itemBuilder: (context, index) {

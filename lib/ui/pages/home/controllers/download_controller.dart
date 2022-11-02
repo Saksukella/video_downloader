@@ -64,9 +64,9 @@ class DownloadCont extends GetxController {
 
       var video = await yt.videos.get(downloadingModel.id);
       downloadingModel = downloadingModel.copyWith(
-        title: video.title,
-        id: video.id.value,
-      );
+          title: video.title,
+          id: video.id.value,
+          url: video.thumbnails.mediumResUrl);
 
       setDownloading(downloadingModel);
 
@@ -75,9 +75,12 @@ class DownloadCont extends GetxController {
       var videoStreams = manifest.videoOnly;
 
       Get.back();
-      VideoOnlyStreamInfo? videoInfo =
-          await showDialogQualitySelect(videoStreams.sortByVideoQuality());
       AudioOnlyStreamInfo audioInfo = manifest.audioOnly.first;
+
+      VideoOnlyStreamInfo? videoInfo = await showDialogQualitySelect(
+          videoStreams.sortByVideoQuality(),
+          downloadingModel,
+          audioInfo.size.totalMegaBytes);
 
       if (videoInfo == null) {
         deleteDownloading(downloadingModel);
@@ -85,7 +88,7 @@ class DownloadCont extends GetxController {
       } else {
         log(("showInterstitial ---- ${readPrefInt(AppKeys.showAd) ?? 0}")
             .toString());
-        if ((readPrefInt(AppKeys.showAd) ?? 0) > 3) {
+        if ((readPrefInt(AppKeys.showAd) ?? 0) > 2) {
           await AdService.showInterstitialAd();
           writePrefInt(AppKeys.showAd, 0);
         } else {
@@ -141,10 +144,14 @@ class DownloadCont extends GetxController {
       }
     } on Exception catch (e) {
       log(e.toString());
-      showFlushbar(
-        title: 'Error',
-        message: e.toString(),
-      );
+      if (downloadCont.modelwID(downloadingModel.id) != null) {
+        showFlushbar(
+          title: 'Error',
+          message: e.toString(),
+        );
+      } else {
+        writePrefInt(AppKeys.showAd, (readPrefInt(AppKeys.showAd) ?? 0) - 1);
+      }
     }
   }
 }

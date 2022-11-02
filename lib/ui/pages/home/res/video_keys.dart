@@ -1,4 +1,5 @@
 class VideoKeys {
-  static String LAST_DURATION_SECOND = "last_duration";
-  static String LAST_WATCHED_VIDEO = "LAST_WATCHED_VIDEO";
+  static const String end_duration = "end_duration";
+  static const String last_duration = "last_durations";
+  static const String last_watched = "LAST_WATCHED_VIDEO";
 }

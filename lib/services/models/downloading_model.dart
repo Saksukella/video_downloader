@@ -4,21 +4,25 @@ import 'dart:convert';
 class DownloadingModel {
   String id;
   String title;
+  String? url;
   int progress;
   DownloadingModel({
     required this.id,
     required this.title,
+    this.url,
     required this.progress,
   });
 
   DownloadingModel copyWith({
     String? id,
     String? title,
+    String? url,
     int? progress,
   }) {
     return DownloadingModel(
       id: id ?? this.id,
       title: title ?? this.title,
+      url: url ?? this.url,
       progress: progress ?? this.progress,
     );
   }
@@ -27,6 +31,7 @@ class DownloadingModel {
     return <String, dynamic>{
       'id': id,
       'title': title,
+      'url': url,
       'progress': progress,
     };
   }
@@ -35,6 +40,7 @@ class DownloadingModel {
     return DownloadingModel(
       id: map['id'] as String,
       title: map['title'] as String,
+      url: map['url'] as String?,
       progress: map['progress'] as int,
     );
   }

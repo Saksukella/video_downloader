@@ -7,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:video_downloader/services/models/downloading_model.dart';
 import 'package:video_downloader/shared/res/utils/asset/asset_utils.dart';
 import 'package:video_downloader/ui/pages/home/controllers/download_controller.dart';
+import 'package:video_downloader/ui/pages/home/home.dart';
 import 'package:video_downloader/ui/surface/snackbars/flushbar.dart';
 import 'package:video_downloader/ui/widgets/helpers/margins.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -51,13 +52,13 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              verticalMargin(10.h),
+              verticalMargin(11.h),
               playerController.initialVideoId != ""
                   ? Transform.scale(
-                      scale: 0.9,
+                      scale: 0.91,
                       child: YoutubePlayer(controller: playerController))
                   : Container(),
-              verticalMargin(10.h),
+              verticalMargin(11.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15.w),
                 child: Column(
@@ -65,8 +66,8 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
                     Visibility(
                       visible: safeID() == "",
                       child: SizedBox(
-                        height: 100,
-                        width: 100,
+                        height: 105,
+                        width: 105,
                         child: Lottie.asset(
                           assetJson("download"),
                           repeat: true,
@@ -74,7 +75,7 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
                         ),
                       ),
                     ),
-                    verticalMargin(15),
+                    verticalMargin(17),
                     TextField(
                       minLines: 1,
                       maxLines: 5,
@@ -85,7 +86,7 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
                         setState(() {});
                       },
                       decoration: InputDecoration(
-                        hintText: "Enter Video Url",
+                        hintText: validateTime() ? "Enter Video Url" : "Url",
                         suffixIcon: IconButton(
                             onPressed: () {
                               controller.clear();
@@ -93,14 +94,14 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
                             },
                             icon: const Icon(Icons.close)),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.r),
+                          borderRadius: BorderRadius.circular(6),
                         ),
                       ),
                     ),
-                    verticalMargin(20.h),
+                    verticalMargin(22.h),
                     MaterialButton(
                       onPressed: () {
-                        if (safeID() != "") {
+                        if (safeID() != "" && validateTime()) {
                           YoutubeMetaData y = playerController.metadata;
                           playerController.addListener(() {
                             if (playerController.value.isReady) {
@@ -118,7 +119,7 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
                         } else {
                           showFlushbar(
                             title: "Invalid Url",
-                            message: "Please enter a valid youtube url",
+                            message: "Please enter a valid url",
                             icon: Icons.error,
                             color: Colors.red,
                           );
@@ -130,7 +131,7 @@ class _SearchInnerPageState extends State<SearchInnerPage> {
                         borderRadius: BorderRadius.circular(50.r),
                       ),
                       color: theme.colorScheme.primaryContainer,
-                      child: const Text("Download"),
+                      child: Text(validateTime() ? "Download" : "Find"),
                     )
                   ],
                 ),

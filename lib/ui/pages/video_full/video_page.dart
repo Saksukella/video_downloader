@@ -1,8 +1,9 @@
-import 'dart:async';
+import 'dart:developer';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:video_downloader/services/models/video_model.dart';
 import 'package:video_downloader/ui/pages/home/controllers/video_controller.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -29,6 +30,9 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   void dispose() {
+    if (_videoController?.isPlaying ?? false) {
+      _videoController!.pause();
+    }
     _videoController?.dispose();
     super.dispose();
   }
@@ -50,10 +54,7 @@ class _VideoPageState extends State<VideoPage> {
                   child: Text('Error'),
                 );
               }
-              Timer.periodic(const Duration(milliseconds: 100), (timer) {
-                videoUtilsSetLastDurationSecond(widget.videoID,
-                    snapshot.data!.videoPlayerController.value.position);
-              });
+              _listen();
 
               return VisibilityDetector(
                 key: const Key('video_page'),
@@ -73,5 +74,25 @@ class _VideoPageState extends State<VideoPage> {
             return const Center(child: CircularProgressIndicator());
           }),
     );
+  }
+
+  void _listen() {
+    _videoController!.videoPlayerController.addListener(() {
+      VideoModel? model = videoMCont.getVideo(widget.videoID);
+      if (model != null) {
+        model.downloadProgress = (_videoController!
+                .videoPlayerController.value.position.inMilliseconds /
+            _videoController!
+                .videoPlayerController.value.duration.inMilliseconds);
+        videoMCont.setVideo(model);
+      }
+
+      log('video progress: ${_videoController!.videoPlayerController.value.position.toString()} ');
+
+      videoUtilsSLastDurationSecond(widget.videoID,
+          _videoController!.videoPlayerController.value.position);
+      videoUtilsSetEndDuration(widget.videoID,
+          _videoController!.videoPlayerController.value.duration);
+    });
   }
 }

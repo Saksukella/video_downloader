@@ -2,6 +2,7 @@ import 'package:chewie/chewie.dart';
 import 'package:get/get.dart';
 import 'package:video_downloader/services/hive/video_hive.dart';
 import 'package:video_downloader/services/models/video_model.dart';
+import 'package:video_downloader/shared/res/utils/flutter_utils.dart';
 import 'package:video_downloader/ui/pages/home/utils/file_utils.dart';
 import 'package:video_player/video_player.dart';
 
@@ -35,23 +36,24 @@ class VideoMController extends GetxController {
   void setVideo(VideoModel video) {
     int index =
         _videos.indexWhere((VideoModel element) => element.url == video.url);
-    VideoModel lastVideo = _videos[index];
     if (index == -1) {
       return;
     }
-    if (lastVideo.downloadProgress.toInt() != video.downloadProgress.toInt()) {
+    postframe(() {
       _videos[index] = video;
       HiveVideo().write(video.id, video);
-      //_videos.refresh();
-    }
+      _videos.refresh();
+    });
   }
 
   void deleteVideo(VideoModel videoModel) {
-    _videos.removeWhere((VideoModel video) => video.id == videoModel.id);
-    HiveVideo().delete(videoModel.id);
-    videoFilefromName(videoModel.id).then(
-        (value) async => await value.exists() ? value.deleteSync() : null);
-    refresh();
+    postframe(() {
+      _videos.removeWhere((VideoModel video) => video.id == videoModel.id);
+      HiveVideo().delete(videoModel.id);
+      videoFilefromName(videoModel.id).then(
+          (value) async => await value.exists() ? value.deleteSync() : null);
+      refresh();
+    });
   }
 
   Future<ChewieController> videoControllerwID(String id,
@@ -70,7 +72,7 @@ class VideoMController extends GetxController {
         fullScreenByDefault: fullScreenByDefault,
         allowFullScreen: fullScreen,
         autoPlay: autoPlay,
-        startAt: videoUtilsLastDurationSecond(id));
+        startAt: videoUtilsGLastDurationSecond(id));
 
     videoUtilsSetLastWatchedVideo(id);
     return c;
