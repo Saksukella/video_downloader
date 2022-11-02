@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "442667502219",
+    "project_id": "video-downloader-5cc49",
+    "storage_bucket": "video-downloader-5cc49.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:442667502219:android:6685792d995529be87228e",
+        "android_client_info": {
+          "package_name": "com.egemen_erdem.video_downloader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "442667502219-2busml928malissr3hismtdti4ptcrbe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXLlv-UdP0mUjnneuzy6gJIxdgUxVqzCM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "442667502219-2busml928malissr3hismtdti4ptcrbe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

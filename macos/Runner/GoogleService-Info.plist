@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>814607703057-05o5hdp87j76qi3qd9sqrfm3bnm2756p.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.814607703057-05o5hdp87j76qi3qd9sqrfm3bnm2756p</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBx-BmZCKKpTyKSBGZUlMBUnV3xReklkoE</string>
+	<key>GCM_SENDER_ID</key>
+	<string>814607703057</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.egemenerdem.videoDownloader</string>
+	<key>PROJECT_ID</key>
+	<string>video-downloader-b6b61</string>
+	<key>STORAGE_BUCKET</key>
+	<string>video-downloader-b6b61.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:814607703057:ios:6b4ddc83d567b248ee65b0</string>
+</dict>
+</plist>

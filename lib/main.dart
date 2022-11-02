@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,7 @@ import 'package:video_downloader/services/routes/app_routes.dart';
 import 'package:video_downloader/shared/services/preferences/s_prefs.dart';
 import 'package:video_downloader/shared/ui/app_theme/app_animations/app_anim_controller.dart';
 
+import 'firebase_options.dart';
 import 'services/hive/video_hive.dart';
 
 import 'shared/services/info/package_info.dart';
@@ -14,6 +16,9 @@ import 'shared/ui/app_theme/theme/themes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await SAppSharedPreferences.init();
   await Hive.initFlutter();
   await HiveVideo().init('videoz');
