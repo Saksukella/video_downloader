@@ -88,7 +88,7 @@ class DownloadCont extends GetxController {
       } else {
         log(("showInterstitial ---- ${readPrefInt(AppKeys.showAd) ?? 0}")
             .toString());
-        if ((readPrefInt(AppKeys.showAd) ?? 0) > 2) {
+        if ((readPrefInt(AppKeys.showAd) ?? 0) > 1) {
           await AdService.showInterstitialAd();
           writePrefInt(AppKeys.showAd, 0);
         } else {

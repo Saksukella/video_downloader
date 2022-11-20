@@ -19,12 +19,16 @@ Flushbar _initMessageFlushbar(
     String? buttonText}) {
   return Flushbar(
     title: title,
-    messageText: message != null
+    message: message,
+    /* messageText: message != null
         ? Text(
             message,
             maxLines: 20,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
           )
-        : null,
+        : null, */
     duration: const Duration(seconds: 4),
     flushbarPosition: FlushbarPosition.TOP,
     flushbarStyle: FlushbarStyle.FLOATING,

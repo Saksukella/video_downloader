@@ -40,6 +40,7 @@ class _VideoPageState extends State<VideoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: FutureBuilder(
           future: videoMCont.videoControllerwID(
             widget.videoID,
@@ -66,7 +67,12 @@ class _VideoPageState extends State<VideoPage> {
                 child: Stack(
                   children: [
                     Chewie(controller: snapshot.data!),
-                    const Positioned(left: 7, top: 7, child: BackButton()),
+                    const Positioned(
+                        left: 7,
+                        top: 7,
+                        child: BackButton(
+                          color: Colors.white,
+                        )),
                   ],
                 ),
               );

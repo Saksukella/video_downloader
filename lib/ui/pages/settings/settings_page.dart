@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lottie/lottie.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:video_downloader/shared/res/utils/asset/asset_utils.dart';
@@ -154,7 +155,7 @@ class SettingsPage extends StatelessWidget {
                           ))
                     ]),
               ),
-              const BannerAdWidget(),
+              const BannerAdWidget(adSize: AdSize(width: 550, height: 95)),
             ],
           ),
         ),

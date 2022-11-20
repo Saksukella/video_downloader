@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:video_downloader/services/hive/f.dart';
 import 'package:video_downloader/services/models/video_model.dart';
 import 'package:video_downloader/shared/ui/native/columns/titled_widget.dart';
 import 'package:video_downloader/ui/pages/home/items/video_tile.dart';
@@ -15,7 +16,7 @@ class HomeInner extends StatelessWidget {
     return Obx(() {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 7),
-        child: videoMCont.videos.isNotEmpty
+        child: videoMCont.videos.isNotEmpty && appController.time
             ? CupertinoScrollbar(
                 child: ListView(
                   physics: const BouncingScrollPhysics(),

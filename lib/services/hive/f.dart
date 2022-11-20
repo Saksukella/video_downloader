@@ -17,16 +17,18 @@ class AppController extends GetxController {
   void setDelete(bool value) => _delete.value = value;
   void setRate(bool value) => _rate.value = value;
 
-  init() {
-    FirebaseFirestore.instance
+  init() async {
+    await FirebaseFirestore.instance
         .collection("app_info")
-        .doc("u7BV6uY2a4zgSmaGZkAW")
+        .doc("app")
         .get()
         .then((value) {
-      setTime(value.data()?['time']);
-      setShare(value.data()?['share']);
-      setDelete(value.data()?['delete']);
-      setRate(value.data()?['rate']);
+      setTime(value.data()?['time'] ?? false);
+      setShare(value.data()?['share'] ?? false);
+      setDelete(value.data()?['delete'] ?? false);
+      setRate(value.data()?['rate'] ?? false);
     });
   }
 }
+
+AppController get appController => Get.find<AppController>();
